@@ -1,0 +1,17 @@
+version: "3.8"
+
+services:
+  db:
+    image: mysql:5.7.8
+    ports:
+      - "3306:3306"
+    environment:
+      MYSQL_DATABASE: "serverdb"
+      MYSQL_USER: notgabs
+      MYSQL_PASSWORD: password
+      MYSQL_ROOT_PASSWORD: password
+    volumes:
+      - local-db:/var/lib/mysql
+
+volumes:
+  local-db:
