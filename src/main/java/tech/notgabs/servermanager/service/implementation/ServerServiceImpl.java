@@ -62,7 +62,7 @@ public class ServerServiceImpl implements ServerService {
 
         Optional<Server> server = serverRepository.findById(id);
         if (server.isEmpty()) {
-            throw new NoSuchElementException("Server id: " + id + " not found");
+            throw new NoSuchElementException("Server with id: " + id + " not found");
         }
 
         serverRepository.deleteById(id);
@@ -74,11 +74,14 @@ public class ServerServiceImpl implements ServerService {
     public Server ping(String ipAddress) throws IOException {
         log.info("Pinging server IP: {}", ipAddress);
 
-        Server server = serverRepository.findByIpAddress(ipAddress);
+        Optional<Server> server = serverRepository.findByIpAddress(ipAddress);
+        if (server.isEmpty()) {
+            throw new NoSuchElementException("Server with ip: " + ipAddress + " not found");
+        }
         InetAddress address = InetAddress.getByName(ipAddress);
 
-        server.setStatus(address.isReachable(5000) ? SERVER_UP : SERVER_DOWN);
+        server.get().setStatus(address.isReachable(5000) ? SERVER_UP : SERVER_DOWN);
 
-        return serverRepository.save(server);
+        return serverRepository.save(server.get());
     }
 }
