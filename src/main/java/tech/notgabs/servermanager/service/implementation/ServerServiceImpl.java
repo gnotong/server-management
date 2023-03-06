@@ -13,6 +13,7 @@ import java.io.IOException;
 import java.net.InetAddress;
 import java.util.Collection;
 import java.util.NoSuchElementException;
+import java.util.Optional;
 
 import static java.lang.Boolean.TRUE;
 import static tech.notgabs.servermanager.enumeration.Status.*;
@@ -58,7 +59,14 @@ public class ServerServiceImpl implements ServerService {
     @Override
     public Boolean delete(Long id) {
         log.info("Deleting server id: {}", id);
+
+        Optional<Server> server = serverRepository.findById(id);
+        if (server.isEmpty()) {
+            throw new NoSuchElementException("Server id: " + id + " not found");
+        }
+
         serverRepository.deleteById(id);
+
         return TRUE;
     }
 

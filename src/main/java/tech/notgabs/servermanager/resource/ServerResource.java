@@ -111,14 +111,26 @@ public class ServerResource {
     }
     @DeleteMapping("/{id}")
     public ResponseEntity<Response> deleteServer(@PathVariable("id") Long id) {
-        return ResponseEntity.ok(
-                Response.builder()
-                        .status(OK)
-                        .statusCode(OK.value())
-                        .timeStamp(now())
-                        .data(Map.of("deleted", serverService.delete(id)))
-                        .message("Server deleted")
-                        .build()
-        );
+        try {
+            return ResponseEntity.ok(
+                    Response.builder()
+                            .status(OK)
+                            .statusCode(OK.value())
+                            .timeStamp(now())
+                            .data(Map.of("deleted", serverService.delete(id)))
+                            .message("Server deleted")
+                            .build()
+            );
+        } catch (NoSuchElementException e) {
+            return ResponseEntity.status(NOT_FOUND).body(
+                    Response.builder()
+                            .status(NOT_FOUND)
+                            .statusCode(NOT_FOUND.value())
+                            .timeStamp(now())
+                            .message("Server not deleted")
+                            .developerMessage(e.getMessage())
+                            .build()
+            );
+        }
     }
 }
