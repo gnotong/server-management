@@ -57,7 +57,7 @@ public class ServerServiceImpl implements ServerService {
     }
 
     @Override
-    public Boolean delete(Long id) {
+    public boolean delete(Long id) {
         log.info("Deleting server id: {}", id);
 
         Optional<Server> server = serverRepository.findById(id);
@@ -67,7 +67,7 @@ public class ServerServiceImpl implements ServerService {
 
         serverRepository.deleteById(id);
 
-        return TRUE;
+        return true;
     }
 
     @Override

@@ -10,6 +10,6 @@ public interface ServerService {
     Collection<Server> list(int limit);
     Server create(Server server);
     Server update(Server server, Long id);
-    Boolean delete(Long id);
+    boolean delete(Long id);
     Server ping(String ipAddress) throws IOException;
 }

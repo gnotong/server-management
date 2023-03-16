@@ -15,18 +15,23 @@ public class AbstractResource {
                         .timeStamp(now())
                         .data(data)
                         .message(message)
+                        .data(data)
+                        .developerMessage(message)
+                        .reason(message)
                         .build()
         );
     }
 
-    protected ResponseEntity<Response> createErrorResponse(HttpStatus status, String developerMsg, String message) {
+    protected ResponseEntity<Response> createErrorResponse(HttpStatus status, Map<String, ?> data, String developerMsg, String message) {
         return ResponseEntity.status(status).body(
                 Response.builder()
                         .status(status)
                         .statusCode(status.value())
                         .timeStamp(now())
                         .message(message)
+                        .data(data)
                         .developerMessage(developerMsg)
+                        .reason(developerMsg)
                         .build()
         );
     }
