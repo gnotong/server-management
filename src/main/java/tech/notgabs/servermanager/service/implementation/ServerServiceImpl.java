@@ -15,7 +15,6 @@ import java.util.Collection;
 import java.util.NoSuchElementException;
 import java.util.Optional;
 
-import static java.lang.Boolean.TRUE;
 import static tech.notgabs.servermanager.enumeration.Status.*;
 
 @RequiredArgsConstructor
