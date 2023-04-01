@@ -5,7 +5,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import tech.notgabs.servermanager.enumeration.Status;
-import tech.notgabs.servermanager.model.ResponseDTO;
+import tech.notgabs.servermanager.dto.ResponseDTO;
 import tech.notgabs.servermanager.model.Server;
 import tech.notgabs.servermanager.service.implementation.ServerServiceImpl;
 
@@ -48,6 +48,6 @@ public class ServerResource extends AbstractResource {
 
     @DeleteMapping("/{id}")
     public ResponseEntity<ResponseDTO> deleteServer(@PathVariable("id") Long id) {
-        return this.createResponse(OK, Map.of("deleted", serverService.delete(11L)), "Server deleted");
+        return this.createResponse(OK, Map.of("deleted", serverService.delete(id)), "Server deleted");
     }
 }
