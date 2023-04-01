@@ -41,18 +41,21 @@ public class ServerServiceImpl implements ServerService {
         return serverRepository.save(server);
     }
 
-    private String setServerImageUrl() {
-        return "";
-    }
-
     @Override
     public Server update(Server server, Long id) {
-        log.info("Updating server name: {}", server.getName());
+        log.info("Updating server: {}", server.getName());
 
         Server existingServer = serverRepository.findById(id).orElseThrow(() -> new NoSuchElementException("Server id: " + id + " not found"));
-        existingServer.copy(server);
+        Server updatedServer = Server.builder()
+                .id(existingServer.getId())
+                .name(server.getName())
+                .type(server.getType())
+                .memory(server.getMemory())
+                .status(server.getStatus())
+                .ipAddress(server.getIpAddress())
+                .build();
 
-        return serverRepository.save(existingServer);
+        return serverRepository.save(updatedServer);
     }
 
     @Override

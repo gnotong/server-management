@@ -1,4 +1,4 @@
-package tech.notgabs.servermanager.model;
+package tech.notgabs.servermanager.dto;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.Data;
@@ -18,7 +18,5 @@ public class ResponseDTO {
     protected int statusCode;
     protected HttpStatus status;
     protected String reason;
-    protected String message;
-    protected String developerMessage;
     protected Map<String, ?> data;
 }
