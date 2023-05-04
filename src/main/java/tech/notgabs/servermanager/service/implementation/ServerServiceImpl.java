@@ -5,6 +5,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
+import tech.notgabs.servermanager.mappers.ServerRequestToServerMapper;
 import tech.notgabs.servermanager.model.Server;
 import tech.notgabs.servermanager.repository.ServerRepository;
 import tech.notgabs.servermanager.service.ServerService;
@@ -15,7 +16,8 @@ import java.util.Collection;
 import java.util.NoSuchElementException;
 import java.util.Optional;
 
-import static tech.notgabs.servermanager.enumeration.Status.*;
+import static tech.notgabs.servermanager.enumeration.Status.SERVER_DOWN;
+import static tech.notgabs.servermanager.enumeration.Status.SERVER_UP;
 
 @RequiredArgsConstructor
 @Service
@@ -23,10 +25,11 @@ import static tech.notgabs.servermanager.enumeration.Status.*;
 @Slf4j
 public class ServerServiceImpl implements ServerService {
     private final ServerRepository serverRepository;
+    private final ServerRequestToServerMapper serverRequestToServerMapper;
     @Override
     public Server get(Long id) {
         log.info("Fetching servers by id: {}", id);
-        return serverRepository.findById(id).orElseThrow(() -> {throw new NoSuchElementException("No server found with id: " + id);});
+        return serverRepository.findById(id).orElseThrow(() -> new NoSuchElementException("No server found with id: " + id));
     }
 
     @Override
@@ -44,18 +47,12 @@ public class ServerServiceImpl implements ServerService {
     @Override
     public Server update(Server server, Long id) {
         log.info("Updating server: {}", server.getName());
+        Server serverToUpdate = serverRepository.findById(id).orElseThrow(() -> new NoSuchElementException("Server id: " + id + " not found"));
 
-        Server existingServer = serverRepository.findById(id).orElseThrow(() -> new NoSuchElementException("Server id: " + id + " not found"));
-        Server updatedServer = Server.builder()
-                .id(existingServer.getId())
-                .name(server.getName())
-                .type(server.getType())
-                .memory(server.getMemory())
-                .status(server.getStatus())
-                .ipAddress(server.getIpAddress())
-                .build();
+        Server serverMerged = serverRequestToServerMapper.apply(server, serverToUpdate);
 
-        return serverRepository.save(updatedServer);
+
+        return serverRepository.save(serverMerged);
     }
 
     @Override

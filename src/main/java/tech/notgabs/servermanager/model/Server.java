@@ -2,17 +2,16 @@ package tech.notgabs.servermanager.model;
 
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotEmpty;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
-import lombok.experimental.SuperBuilder;
+import lombok.*;
 import tech.notgabs.servermanager.enumeration.Status;
 
 @Entity
-@Data
-@SuperBuilder
+@Setter
+@Getter
+@Builder
 @NoArgsConstructor
 @AllArgsConstructor
+@ToString
 public class Server {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)

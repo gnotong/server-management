@@ -4,50 +4,62 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import tech.notgabs.servermanager.dto.ServerResponseDTO;
 import tech.notgabs.servermanager.enumeration.Status;
-import tech.notgabs.servermanager.dto.ResponseDTO;
+import tech.notgabs.servermanager.mappers.ServerToServerResponseMapper;
 import tech.notgabs.servermanager.model.Server;
 import tech.notgabs.servermanager.service.implementation.ServerServiceImpl;
 
 import java.io.IOException;
 import java.net.ConnectException;
-import java.util.Map;
+import java.util.List;
+import java.util.Objects;
+import java.util.stream.Collectors;
 
-import static org.springframework.http.HttpStatus.*;
+import static org.springframework.http.HttpStatus.CREATED;
 
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/servers")
 @CrossOrigin
-public class ServerResource extends AbstractResource {
+public class ServerResource {
     private final ServerServiceImpl serverService;
+    private final ServerToServerResponseMapper serverResponseMapper;
 
     @GetMapping
-    public ResponseEntity<ResponseDTO> getServers(@RequestParam("limit") int limit) {
-        return this.createResponse(OK, Map.of("servers", serverService.list(limit)), "Servers retrieved");
+    public ResponseEntity<List<ServerResponseDTO>> getServers(@RequestParam("limit") int limit) {
+        return ResponseEntity.ok(
+                serverService.list(limit)
+                        .stream()
+                        .filter(Objects::nonNull)
+                        .map(serverResponseMapper)
+                        .collect(Collectors.toList())
+        );
     }
 
     @GetMapping("/ping/{ipAddress}")
-    public ResponseEntity<ResponseDTO> pingServer(@PathVariable("ipAddress") String ipAddress) throws IOException {
+    public ResponseEntity<ServerResponseDTO> pingServer(@PathVariable("ipAddress") String ipAddress) throws IOException {
         Server server = serverService.ping(ipAddress);
         if (server.getStatus().equals(Status.SERVER_DOWN)) {
             throw new ConnectException("Ping failed");
         }
-        return this.createResponse(OK, Map.of("server", server), "Ping successful");
+        return ResponseEntity.ok(serverResponseMapper.apply(server));
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<ResponseDTO> updateServer(@PathVariable("id") Long id, @RequestBody Server server) {
-        return this.createResponse(OK, Map.of("server", serverService.update(server, id)), "Server updated");
+    public ResponseEntity<ServerResponseDTO> updateServer(@PathVariable("id") Long id, @RequestBody Server server) {
+        Server serverUpdated = serverService.update(server, id);
+        return ResponseEntity.ok(serverResponseMapper.apply(serverUpdated));
     }
 
     @PostMapping
-    public ResponseEntity<ResponseDTO> addServer(@RequestBody @Valid Server server) {
-        return this.createResponse(CREATED, Map.of("server", serverService.create(server)), "Server created");
+    public ResponseEntity<ServerResponseDTO> addServer(@RequestBody @Valid Server server) {
+        Server newServer = serverService.create(server);
+        return ResponseEntity.status(CREATED).body(serverResponseMapper.apply(newServer));
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<ResponseDTO> deleteServer(@PathVariable("id") Long id) {
-        return this.createResponse(OK, Map.of("deleted", serverService.delete(id)), "Server deleted");
+    public ResponseEntity<Boolean> deleteServer(@PathVariable("id") Long id) {
+        return ResponseEntity.ok(serverService.delete(id));
     }
 }
